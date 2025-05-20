@@ -83,3 +83,39 @@
   border: 1px solid #d3d3d3;
   border-radius: 10px;
 }
+  .background-line {
+    background-color: #1e3a8a; /* Blue */
+    width: 89%; /* Full width */
+    
+    position: absolute;
+    top: 50%;
+    margin-left: 144.5px;
+    z-index: 0;
+  }
+ .green-line {
+    background-color: green; /* Blue */
+    width: 89%; /* Full width */
+    
+    position: absolute;
+    top: 50%;
+    margin-left: 144.5px;
+    z-index: 0;
+  }
+  @keyframes greenTransition {
+    from {
+      width: 0;
+    }
+    to {
+      width: 89%;
+    }
+  }
+
+  .animated-line {
+    background-color: green; /* Green */
+    animation: greenTransition 4s forwards; /* Duration of 5 seconds */
+   
+    position: absolute;
+    top: 50%;
+    margin-left: 144.5px;
+    z-index: 1; /* Overlay it above the background line */
+  }

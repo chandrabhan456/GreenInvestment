@@ -24,7 +24,7 @@ export const ContextProvider = ({ children }) => {
  }const [isClicked, setIsClicked] = useState(initialState);
   const [mainPage, setMainPage] = useState(true)
   const [login1, setlogin1] = useState(initialLoginState);
-
+  const [sidebarCurrentStep, setSidebarCurrentStep] = useState(0);
   useEffect(() => {
     localStorage.setItem('login', login1);
   }, [login1]);
@@ -35,7 +35,7 @@ export const ContextProvider = ({ children }) => {
 
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <StateContext.Provider value={{login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
+    <StateContext.Provider value={{sidebarCurrentStep, setSidebarCurrentStep,login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
       {children}
     </StateContext.Provider>
   );

@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useStateContext } from "../contexts/ContextProvider";
+import {  useStateContext } from "../contexts/ContextProvider";
 import "./Sidebar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import GreenInvestment from "../data/Investment.png";
@@ -20,7 +20,7 @@ import { RiUpload2Fill } from "react-icons/ri";
     // Add more options as needed
   ];
 const Sidebar = () => {
- 
+  const {sidebarCurrentStep, setSidebarCurrentStep} = useStateContext()
     // State to hold the input value
   const [investmentBudget, setInvestmentBudget] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
@@ -55,15 +55,39 @@ const Sidebar = () => {
       console.log('File selected:', file.name);
     }
   };
-  const handleSubmit = () => {
-    if (selectedFile) {
-      console.log('Submitting file:', selectedFile.name);
-      // Add logic to upload the file to a server or process it as needed
-    } else {
-      console.log('No file selected');
-      // Handle the case where no file is selected
-    }
-  };
+const handleSubmit = () => {
+  // Create a new FormData object
+  setSidebarCurrentStep(1)
+  const formData = new FormData();
+  
+  // Append the necessary fields to the FormData object
+  formData.append('InvestmentBudget', investmentBudget);
+  formData.append('RiskTolerance', riskTolerance);
+  formData.append('TimeHorizon', timeHorizon);
+  formData.append('InvestmentType', investmentType);
+
+  // Set a 2-second timeout before proceeding with the API call
+  setTimeout(() => {
+      setSidebarCurrentStep(2);
+    // Proceed with the API call after a 2-second delay
+    fetch('https://your-api-endpoint.com/submit', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Form submitted successfully');
+       // Proceed to the next step after successful submission
+      } else {
+        console.error('Form submission failed');
+      }
+    })
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
+  }, 5000); // 2000 milliseconds = 2 seconds
+};
+
   return (
     <div className=" w-80 p-4  mt-1">
       {/* Add your image here */}

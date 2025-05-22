@@ -119,3 +119,70 @@
     margin-left: 144.5px;
     z-index: 1; /* Overlay it above the background line */
   }
+
+  .loading-container {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+}
+ 
+.dot {
+
+  width: 10px;
+
+  height: 10px;
+
+  border-radius: 50%;
+
+  background-color: #3b82f6; /* Blue color */
+
+  animation: blink 1.4s infinite both;
+
+}
+ 
+.dot:nth-child(1) {
+
+  animation-delay: 0s;
+
+}
+ 
+.dot:nth-child(2) {
+
+  animation-delay: 0.2s;
+
+}
+ 
+.dot:nth-child(3) {
+
+  animation-delay: 0.4s;
+
+}
+ 
+@keyframes blink {
+
+  0%,
+
+  50%,
+
+  100% {
+
+    opacity: 0;
+
+  }
+
+  25%,
+
+  75% {
+
+    opacity: 1;
+
+  }
+
+}
+ 

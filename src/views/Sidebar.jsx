@@ -5,6 +5,7 @@ import "./Sidebar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import GreenInvestment from "../data/Investment.png";
 import { RiUpload2Fill } from "react-icons/ri";
+import { IoIosClose } from "react-icons/io";
  const riskToleranceOptions = [
     { value: 'low', label: 'Low' },
     { value: 'medium', label: 'Medium' },
@@ -20,7 +21,7 @@ import { RiUpload2Fill } from "react-icons/ri";
     // Add more options as needed
   ];
 const Sidebar = () => {
-  const {sidebarCurrentStep, setSidebarCurrentStep} = useStateContext()
+  const {setResult, setSidebarCurrentStep,isLoading, setIsLoading} = useStateContext()
     // State to hold the input value
   const [investmentBudget, setInvestmentBudget] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
@@ -55,38 +56,180 @@ const Sidebar = () => {
       console.log('File selected:', file.name);
     }
   };
+  const handlePdfRemove = () => {
+    setSelectedFile(null)
+  
+    }
 const handleSubmit = () => {
   // Create a new FormData object
-  setSidebarCurrentStep(1)
+  
+  if (!selectedFile) {
+setSidebarCurrentStep(1)
+  const formData1 = new FormData();
+  
+  // Append the necessary fields to the FormData object
+  formData1.append('Investment_Budget', investmentBudget);
+  formData1.append('risk_tolerance', riskTolerance);
+  formData1.append('time_horizon', `${timeHorizon} years`);
+  formData1.append('investment_type', investmentType);
+  const queryParams = new URLSearchParams({
+  Investment_Budget: investmentBudget,
+  risk_tolerance: riskTolerance,
+  time_horizon: `${timeHorizon} years`,
+  investment_type: investmentType,
+  
+});
+
+
+
+  setResult('')
+
+  // Set a 2-second timeout before proceeding with the API call
+ setTimeout(() => {
+
+  setSidebarCurrentStep(2);
+
+  setIsLoading(true);
+
+  // Proceed with the API call after a 2-second delay
+
+  const url = `http://127.0.0.1:8000/inputwithoutupload/?${queryParams.toString()}`;
+ 
+fetch(url, {
+  method: 'POST',
+})
+
+    .then(response => {
+
+      if (response.ok) {
+
+        return response.json(); // Parse the JSON from the response
+
+      }
+
+      throw new Error('Network response was not ok');
+
+    })
+
+    .then(data => {
+
+      // At this point, data is the resolved JSON object from the response
+
+      console.log('testing 1', data); // Log the entire data object
+
+      if (data.output) {
+
+        console.log('testing 2', data.output);
+
+        setResult(data.output);
+
+        setSidebarCurrentStep(3);
+
+        // Log the 'output' property if it exists
+
+      } else {
+
+        console.log("The 'output' property is not found in the response.");
+
+      }
+
+    })
+
+    .catch(error => {
+
+      console.error('An error occurred:', error);
+
+    })
+
+    .finally(() => {
+
+      setIsLoading(false);
+
+    });
+
+}, 5000);
+  }
+  else {setSidebarCurrentStep(1)
   const formData = new FormData();
   
   // Append the necessary fields to the FormData object
-  formData.append('InvestmentBudget', investmentBudget);
-  formData.append('RiskTolerance', riskTolerance);
-  formData.append('TimeHorizon', timeHorizon);
-  formData.append('InvestmentType', investmentType);
+  formData.append('Investment_Budget', investmentBudget);
+  formData.append('risk_tolerance', riskTolerance);
+  formData.append('time_horizon', `${timeHorizon} years`);
+  formData.append('investment_type', investmentType);
+
+
+  formData.append('file', selectedFile); // 'files' is the key used in the backend
+  setResult('')
 
   // Set a 2-second timeout before proceeding with the API call
-  setTimeout(() => {
-      setSidebarCurrentStep(2);
-    // Proceed with the API call after a 2-second delay
-    fetch('https://your-api-endpoint.com/submit', {
-      method: 'POST',
-      body: formData,
-    })
+ setTimeout(() => {
+
+  setSidebarCurrentStep(2);
+
+  setIsLoading(true);
+
+  // Proceed with the API call after a 2-second delay
+
+  fetch('http://127.0.0.1:8000/inputwithupload/', {
+
+    method: 'POST',
+
+    body: formData,
+
+  })
+
     .then(response => {
+
       if (response.ok) {
-        console.log('Form submitted successfully');
-       // Proceed to the next step after successful submission
-      } else {
-        console.error('Form submission failed');
+
+        return response.json(); // Parse the JSON from the response
+
       }
+
+      throw new Error('Network response was not ok');
+
     })
+
+    .then(data => {
+
+      // At this point, data is the resolved JSON object from the response
+
+      console.log('testing 1', data); // Log the entire data object
+
+      if (data.output) {
+
+        console.log('testing 2', data.output);
+
+        setResult(data.output);
+
+        setSidebarCurrentStep(3);
+
+        // Log the 'output' property if it exists
+
+      } else {
+
+        console.log("The 'output' property is not found in the response.");
+
+      }
+
+    })
+
     .catch(error => {
+
       console.error('An error occurred:', error);
+
+    })
+
+    .finally(() => {
+
+      setIsLoading(false);
+
     });
-  }, 5000); // 2000 milliseconds = 2 seconds
-};
+
+}, 5000); // 5000 milliseconds = 5 seconds
+  }
+}
 
   return (
     <div className=" w-80 p-4  mt-1">
@@ -140,10 +283,11 @@ const handleSubmit = () => {
       </select>
       
     </div>
-     <div className="flex flex-col mb-4">
+       <div className="flex flex-col mb-4">
       <label htmlFor="time-horizon" className="text-lg font-semibold mb-2">
-        Time Horizon*
+        Time Horizon(years)*
       </label>
+      <div className="flex items-center ">
       <input
         type="range"
         id="time-horizon"
@@ -152,10 +296,15 @@ const handleSubmit = () => {
         max="30"
         value={timeHorizon}
         onChange={handleChange2}
-        className="slider"
+        className="slider w-[95%] bg-blue-300"
+        style={{
+        accentColor: '#1e3a8a', // Tailwind blue-800
+      }}
       />
-    
+     <span className="ml-2 text-xl"> {timeHorizon}</span>
+     </div>
     </div>
+ 
   <div className="flex flex-col mb-4">
       <label htmlFor="investment-type" className="text-lg font-semibold mb-2">
         Investment Type*
@@ -194,7 +343,17 @@ const handleSubmit = () => {
           </div>
           <span className="text-lg text-blue-700 font-semibold mt-2">Upload</span>
         </div>
+        
       </div>
+      {selectedFile &&
+      <div className="flex">
+        
+      <span className="w-[80%]">{selectedFile.name}</span>
+      {/* Remove File */}
+
+        
+      </div>
+        }
     </div>
    <div className="flex justify-center w-full ml-[33%]">
         <button

@@ -10,18 +10,19 @@ import { IoIosClose } from "react-icons/io";
     { value: 'low', label: 'Low' },
     { value: 'medium', label: 'Medium' },
     { value: 'high', label: 'High' },
+      { value: 'veryhigh', label: 'VeryHigh' },
     // Add more options as needed
   ];
    const investmentTypeOptions = [
     { value: 'stocks', label: 'Stocks' },
     { value: 'bonds', label: 'Bonds' },
-    { value: 'real-estate', label: 'Real Estate' },
+   
     { value: 'mutual-funds', label: 'Mutual Funds' },
-    { value: 'etfs', label: 'ETFs' },
+  
     // Add more options as needed
   ];
 const Sidebar = () => {
-  const {setResult, setSidebarCurrentStep,isLoading, setIsLoading} = useStateContext()
+  const {error,setError,setResult, setSidebarCurrentStep,isLoading, setIsLoading} = useStateContext()
     // State to hold the input value
   const [investmentBudget, setInvestmentBudget] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
@@ -48,6 +49,22 @@ const Sidebar = () => {
   };
     const handleChange3 = (event) => {
     setInvestmentType(event.target.value);
+    if(event.target.value === 'bonds'){
+      riskToleranceOptions.length = 0; // Clear existing array
+    riskToleranceOptions.push(
+      { value: 'low', label: 'Low' },
+      { value: 'medium', label: 'Medium' }
+    );
+    }
+    else{
+       riskToleranceOptions.length = 0; // Clear existing array
+    riskToleranceOptions.push(
+      { value: 'low', label: 'Low' },
+      { value: 'medium', label: 'Medium' },
+         { value: 'high', label: 'High' },
+      { value: 'veryhigh', label: 'VeryHigh' },
+    );
+    }
   };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -210,7 +227,7 @@ fetch(url, {
       } else {
 
         console.log("The 'output' property is not found in the response.");
-
+        setError("Response Error please try again!")
       }
 
     })
@@ -218,7 +235,7 @@ fetch(url, {
     .catch(error => {
 
       console.error('An error occurred:', error);
-
+        setError('Please try again!')
     })
 
     .finally(() => {
@@ -229,10 +246,11 @@ fetch(url, {
 
 }, 5000); // 5000 milliseconds = 5 seconds
   }
+         
 }
 
   return (
-    <div className=" w-80 p-4  mt-1">
+  <div className="w-80 p-4 mt-1 h-[90%] overflow-y-auto custom-scrollbar overflow-x-hidden">
       {/* Add your image here */}
       <div style={{ textAlign: "center", marginTop: "5px" }}>
             <img
@@ -247,7 +265,7 @@ fetch(url, {
             />
           </div>
 
-   <div className="flex flex-col mb-4">
+   <div className="flex flex-col mb-4 ml-2">
       <label htmlFor="investment-budget" className="text-lg font-semibold mb-2">
         Investment Budget*
       </label>
@@ -262,7 +280,29 @@ fetch(url, {
         required
       />
     </div>
-     <div className="flex flex-col mb-4">
+    
+  <div className="flex flex-col mb-4 ml-2">
+      <label htmlFor="investment-type" className="text-lg font-semibold mb-2">
+        Investment Type*
+      </label>
+      <select
+        id="investment-type"
+        name="investment-type"
+        value={investmentType}
+        onChange={handleChange3}
+        className="border border-gray-300 rounded-md p-2 text-lg focus:outline-none focus:border-blue-500"
+        required
+      >
+  
+        {investmentTypeOptions.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+   
+    </div>
+     <div className="flex flex-col mb-4 ml-2">
       <label htmlFor="risk-tolerance" className="text-lg font-semibold mb-2">
         Risk Tolerence*
       </label>
@@ -274,7 +314,7 @@ fetch(url, {
         className="border border-gray-300 rounded-md p-2 text-lg focus:outline-none focus:border-blue-500"
         required
       >
-        <option value="" disabled>Select your risk tolerance</option>
+    
         {riskToleranceOptions.map((option, index) => (
           <option key={index} value={option.value}>
             {option.label}
@@ -283,7 +323,7 @@ fetch(url, {
       </select>
       
     </div>
-       <div className="flex flex-col mb-4">
+       <div className="flex flex-col mb-4 ml-2">
       <label htmlFor="time-horizon" className="text-lg font-semibold mb-2">
         Time Horizon(years)*
       </label>
@@ -305,64 +345,55 @@ fetch(url, {
      </div>
     </div>
  
-  <div className="flex flex-col mb-4">
-      <label htmlFor="investment-type" className="text-lg font-semibold mb-2">
-        Investment Type*
-      </label>
-      <select
-        id="investment-type"
-        name="investment-type"
-        value={investmentType}
-        onChange={handleChange3}
-        className="border border-gray-300 rounded-md p-2 text-lg focus:outline-none focus:border-blue-500"
-        required
-      >
-        <option value="" disabled>Select your investment type</option>
-        {investmentTypeOptions.map((option, index) => (
-          <option key={index} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-   
-    </div>
     <div className="flex flex-col items-left mb-4">
-      <label htmlFor="document-upload" className="text-lg font-semibold mb-2">
+      <label htmlFor="document-upload" className="text-lg font-semibold mb-2 ml-2">
         Investment Document
       </label>
-      <div className="relative border-2 border-blue-500 rounded-lg overflow-hidden cursor-pointer">
-        <input
-          type="file"
-          id="document-upload"
-          onChange={handleFileChange}
-          className="absolute inset-0 opacity-0 cursor-pointer"
-        />
+  <div className="relative border-2 w-[80%] mx-auto justify-between border-blue-500 rounded-lg overflow-hidden cursor-pointer">
+  <input
+    type="file"
+    id="document-upload"
+    onChange={handleFileChange}
+    className="absolute inset-0 opacity-0 cursor-pointer"
+  />
         <div className="flex flex-col items-center justify-center p-4 bg-blue-200 hover:bg-blue-300 border border-dashed border-blue-500 ">
-          <div className="text-blue-500">
-           <RiUpload2Fill size={64} /> {/* Add the icon here */}
+          <div className=" text-blue-500">
+           <RiUpload2Fill size={32} /> {/* Add the icon here */}
           </div>
           <span className="text-lg text-blue-700 font-semibold mt-2">Upload</span>
         </div>
         
       </div>
       {selectedFile &&
-      <div className="flex">
+      <div className="flex ml-[10%]">
         
-      <span className="w-[80%]">{selectedFile.name}</span>
+      <span className=" "  style={{
+                 cursor: "pointer",
+                 
+            
+                 overflow: "hidden", // Prevent overflowing text
+                 whiteSpace: "nowrap", // Prevent wrapping to the next line
+                 textOverflow: "ellipsis", // Add ellipsis for overflow
+                 maxWidth: "80%", // Adjust the width as needed
+               }}>{selectedFile.name}</span>
       {/* Remove File */}
 
         
       </div>
         }
     </div>
-   <div className="flex justify-center w-full ml-[33%]">
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-        >
-          Submit
-        </button>
-      </div>
+<div className="relative border-2 w-[80%] mx-auto justify-between  rounded-lg overflow-hidden cursor-pointer">
+  <button
+    onClick={handleSubmit}
+    disabled={isLoading} // Disable the button if isLoading is true
+    className={`w-full text-white font-bold py-2 px-4 rounded ${isLoading ? 'bg-gray-400 cursor-not-allowed border-gray-400' : 'bg-blue-500 hover:bg-blue-600 border-blue-500'}`}
+  >
+    Submit
+  </button>
+</div>
+
+
+
     </div>
   );
 };

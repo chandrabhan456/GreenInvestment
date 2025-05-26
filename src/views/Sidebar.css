@@ -19,12 +19,4 @@
     margin: 10px 0;
     
     cursor: pointer;
-  }/*
-  @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%); /* Hide sidebar by default on small screens 
   }
-  .sidebar.visible {
-    transform: translateX(0); /* Show sidebar when visible 
-  }
-}*/

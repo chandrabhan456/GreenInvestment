@@ -32,12 +32,12 @@ export const ContextProvider = ({ children }) => {
   }, [login1]);
   
   
- 
+ const [error,setError] = useState('')
   const handleClick = (clicked) => setIsClicked({ ...initialState, [clicked]: true });
 
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <StateContext.Provider value={{sidebarCurrentStep,result,isLoading, setIsLoading, setResult, setSidebarCurrentStep,login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
+    <StateContext.Provider value={{error,setError,sidebarCurrentStep,result,isLoading, setIsLoading, setResult, setSidebarCurrentStep,login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
       {children}
     </StateContext.Provider>
   );

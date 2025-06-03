@@ -3,15 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chatscope/chat-ui-kit-react": "^2.1.1",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@fluentui/react-components": "^9.64.0",
     "cors": "^2.8.5",
+    "docx": "^9.5.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "mammoth": "^1.9.0",
     "marked": "^15.0.12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.1",
-    "react-select": "^5.9.0"
+    "react-select": "^5.9.0",
+    "recharts": "^2.15.3",
+    "showdown": "^2.1.0",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

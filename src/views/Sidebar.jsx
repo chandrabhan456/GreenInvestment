@@ -250,7 +250,7 @@ fetch(url, {
 }
 
   return (
-  <div className="w-80 p-4 mt-1 h-[90%] overflow-y-auto custom-scrollbar overflow-x-hidden">
+  <div className="w-80 bg-gray-200 p-4 mt-1 h-[90%] overflow-y-auto custom-scrollbar overflow-x-hidden">
       {/* Add your image here */}
       <div style={{ textAlign: "center", marginTop: "5px" }}>
             <img

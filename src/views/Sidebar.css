@@ -19,4 +19,31 @@
     margin: 10px 0;
     
     cursor: pointer;
-  }
+  }.custom-scrollbar {
+  overflow-y: auto; /* Ensure the element can scroll vertically if needed */
+  overflow-x: auto; /* Ensure the element can scroll horizontally if needed */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 3px solid #f0f0f0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: #333;
+}

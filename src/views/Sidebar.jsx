@@ -13,13 +13,12 @@ import { IoIosClose } from "react-icons/io";
       { value: 'veryhigh', label: 'VeryHigh' },
     // Add more options as needed
   ];
-   const investmentTypeOptions = [
-    { value: 'stocks', label: 'Stocks' },
-    { value: 'bonds', label: 'Bonds' },
-   
-    { value: 'mutual-funds', label: 'Mutual Funds' },
-  
-    // Add more options as needed
+  const investmentTypes = [
+    'Stocks',
+    'Bonds',
+    'Real Estate',
+    'Mutual Funds',
+    'ETFs'
   ];
 const Sidebar = () => {
   const {error,setError,setResult, setSidebarCurrentStep,isLoading, setIsLoading} = useStateContext()
@@ -32,7 +31,7 @@ const Sidebar = () => {
     setInvestmentBudget(event.target.value);
   };
     const [riskTolerance, setRiskTolerance] = useState(riskToleranceOptions[0].value);
-     const [investmentType, setInvestmentType] = useState(investmentTypeOptions[0].value);
+    const [selectedInvestmentTypes, setSelectedInvestmentTypes] = useState([]);
 
   // Dynamic options for the dropdown
    // State to hold the value of the slider
@@ -48,7 +47,7 @@ const Sidebar = () => {
     setRiskTolerance(event.target.value);
   };
     const handleChange3 = (event) => {
-    setInvestmentType(event.target.value);
+  
     if(event.target.value === 'bonds'){
       riskToleranceOptions.length = 0; // Clear existing array
     riskToleranceOptions.push(
@@ -65,6 +64,15 @@ const Sidebar = () => {
       { value: 'veryhigh', label: 'VeryHigh' },
     );
     }
+  };
+  const handleCheckboxChange = (type) => {
+    setSelectedInvestmentTypes(prevSelected => {
+      if (prevSelected.includes(type)) {
+        return prevSelected.filter(item => item !== type);
+      } else {
+        return [...prevSelected, type];
+      }
+    });
   };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -88,12 +96,13 @@ setSidebarCurrentStep(1)
   formData1.append('Investment_Budget', investmentBudget);
   formData1.append('risk_tolerance', riskTolerance);
   formData1.append('time_horizon', `${timeHorizon} years`);
-  formData1.append('investment_type', investmentType);
+  formData1.append('investment_type', selectedInvestmentTypes);
+  console.log(selectedInvestmentTypes)
   const queryParams = new URLSearchParams({
   Investment_Budget: investmentBudget,
   risk_tolerance: riskTolerance,
   time_horizon: `${timeHorizon} years`,
-  investment_type: investmentType,
+  investment_type: selectedInvestmentTypes,
   
 });
 
@@ -164,7 +173,7 @@ fetch(url, {
 
     });
 
-}, 5000);
+}, 0);
   }
   else {setSidebarCurrentStep(1)
   const formData = new FormData();
@@ -173,7 +182,7 @@ fetch(url, {
   formData.append('Investment_Budget', investmentBudget);
   formData.append('risk_tolerance', riskTolerance);
   formData.append('time_horizon', `${timeHorizon} years`);
-  formData.append('investment_type', investmentType);
+  formData.append('investment_type', selectedInvestmentTypes);
 
 
   formData.append('file', selectedFile); // 'files' is the key used in the backend
@@ -264,7 +273,6 @@ fetch(url, {
               }}
             />
           </div>
-
    <div className="flex flex-col mb-4 ml-2">
       <label htmlFor="investment-budget" className="text-lg font-semibold mb-2">
         Investment Budget*
@@ -280,28 +288,26 @@ fetch(url, {
         required
       />
     </div>
-    
-  <div className="flex flex-col mb-4 ml-2">
-      <label htmlFor="investment-type" className="text-lg font-semibold mb-2">
-        Investment Type*
+      <div className="flex flex-col mb-4 ml-2">
+      <label className="text-lg font-semibold mb-2">
+        Select Investment Types
       </label>
-      <select
-        id="investment-type"
-        name="investment-type"
-        value={investmentType}
-        onChange={handleChange3}
-        className="border border-gray-300 rounded-md p-2 text-lg focus:outline-none focus:border-blue-500"
-        required
-      >
-  
-        {investmentTypeOptions.map((option, index) => (
-          <option key={index} value={option.value}>
-            {option.label}
-          </option>
+      <div>
+        {investmentTypes.map((type, index) => (
+          <div key={index} className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              checked={selectedInvestmentTypes.includes(type)}
+              onChange={() => handleCheckboxChange(type)}
+              className="mr-2"
+            />
+            <span>{type}</span>
+          </div>
         ))}
-      </select>
-   
+      </div>
     </div>
+
+ 
      <div className="flex flex-col mb-4 ml-2">
       <label htmlFor="risk-tolerance" className="text-lg font-semibold mb-2">
         Risk Tolerence*

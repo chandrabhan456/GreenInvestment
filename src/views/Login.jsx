@@ -223,8 +223,8 @@ const handleSignUp = () => {
               }}
             />
     </div>
-   <div class="container-wrapper">
-    <div class="container">
+   <div className="container-wrapper">
+    <div className="container">
        <img
               src={Climate}
               alt="Agent Logo"
@@ -240,7 +240,7 @@ const handleSignUp = () => {
         <div className='text-white text-sm text-centre' style={{marginTop:'0px'}}>Sustainable companies</div>
         
     </div>
-    <div class="container">
+    <div className="container">
       
         <img
               src={Return1}
@@ -258,7 +258,7 @@ const handleSignUp = () => {
         <div className='text-white text-sm text-centre' style={{marginTop:'0px'}}>In long term</div>
         
     </div>
-    <div class="container">
+    <div className="container">
       
         <img
               src={datadriven}
@@ -275,7 +275,7 @@ const handleSignUp = () => {
         <div className='text-white text-sm text-centre' style={{marginTop:'0px'}}>data and green impact metrices</div>
         
     </div>
-    <div class="container">
+    <div className="container">
          <img
               src={Input1}
               alt="Agent Logo"
@@ -289,7 +289,7 @@ const handleSignUp = () => {
             />
         <div className='text-white text-xl text-center' style={{marginTop:'-10px'}}>Input your goals</div>
     </div>
-    <div class="container">
+    <div className="container">
      
        <img
               src={Best1}
@@ -306,7 +306,7 @@ const handleSignUp = () => {
         <div className='text-white text-xl text-centre' style={{marginTop:'0px'}}>Companies and funds</div>
       
     </div>
-    <div class="container">
+    <div className="container">
       
          <img
               src={Port1}

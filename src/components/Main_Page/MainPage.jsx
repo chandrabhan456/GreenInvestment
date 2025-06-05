@@ -27,18 +27,7 @@ const MainPage = () => {
  
 
   useEffect(() => {
-    const apiResponse = `
-      | Stock Name         | Sector              | Fundamental Analysis                                                                 | Technical Analysis                                                                 | Beta Value | Current Price | Summary                                                                 | Dividend | PE Ratio | All-Time High | Investment Type | Reason for Recommendation                                                                 | Allocation Strategy |
-      |---------------------|---------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|------------|---------------|------------------------------------------------------------------------|----------|----------|---------------|-----------------|-----------------------------------------------------------------------------------------|---------------------|
-      | Tesla Inc. (TSLA)  | Electric Vehicles   | Strong revenue growth, innovative technology, and leadership in EV market           | Currently trading near support levels, potential for breakout                     | 2.00       | $250          | Leader in EV market with strong growth potential                                    | No       | 70       | $414          | Stocks          | High growth potential in EV and renewable energy sector                                | 20%                 |
-      | NextEra Energy (NEE)| Renewable Energy    | Consistent revenue growth, strong dividend yield, and focus on clean energy         | Trading near 52-week low, potential for recovery                                  | 0.85       | $70           | Largest producer of wind and solar energy in the U.S.                                | Yes      | 25       | $93           | Stocks          | Stable growth and strong commitment to renewable energy                               | 15%                 |
-      | Enphase Energy (ENPH)| Solar Technology   | High revenue growth, innovative solar solutions, and strong market position         | Oversold conditions, potential for upward movement                                | 1.50       | $120          | Leader in solar microinverters and energy storage solutions                          | No       | 50       | $282          | Stocks          | High growth potential in solar energy technology                                     | 15%                 |
-      | Brookfield Renewable Partners (BEP)| Renewable Energy | Strong dividend yield, diversified renewable energy portfolio, and global presence | Trading near support levels, potential for upward trend                           | 0.90       | $30           | Diversified renewable energy assets across hydro, wind, and solar                    | Yes      | 20       | $45           | Stocks          | Stable income and growth potential in renewable energy                               | 15%                 |
-      | Plug Power Inc. (PLUG)| Hydrogen Energy   | High revenue growth, leadership in hydrogen fuel cell technology                    | Trading near 52-week low, potential for recovery                                  | 1.80       | $10           | Leader in hydrogen fuel cell technology                                              | No       | N/A      | $75           | Stocks          | High growth potential in hydrogen energy market                                      | 10%                 |
-      | First Solar Inc. (FSLR)| Solar Energy     | Strong revenue growth, innovative solar panel technology, and market leadership     | Trading near resistance levels, potential for breakout                            | 1.10       | $180          | Leader in solar panel manufacturing                                                  | No       | 30       | $232          | Stocks          | High growth potential in solar energy manufacturing                                  | 10%                 |
-      | SunPower Corporation (SPWR)| Solar Energy | High revenue growth, innovative solar solutions, and strong market position         | Oversold conditions, potential for upward movement                                | 1.40       | $15           | Leader in residential solar energy solutions                                         | No       | N/A      | $57           | Stocks          | High growth potential in residential solar energy market                             | 10%                 |
-      | Ormat Technologies (ORA)| Geothermal Energy| Consistent revenue growth, strong dividend yield, and focus on geothermal energy    | Trading near support levels, potential for upward trend                           | 0.80       | $80           | Leader in geothermal energy solutions                                                | Yes      | 35       | $100          | Stocks          | Stable growth and strong commitment to geothermal energy                             | 5%                  |
-    `;
+    
 
     const parseApiResponse = (response) => {
       const dataLines = response.trim().split("\n").slice(2); // Skip the first two header lines
@@ -63,16 +52,16 @@ const MainPage = () => {
       return stocks;
     };
 
-    const parsedData = parseApiResponse(apiResponse);
+    const parsedData = parseApiResponse(result);
     setStockData(parsedData);
-  }, []);
+  }, [result]);
   const filteredData = stockData; // Update this logic based on tab later
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentStocks = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   console.log("stock data", stockData);
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen ">
       {/* Tabs */}
       <div className="flex">
        {activeTab === 'Stocks' && <div className="w-1/2">

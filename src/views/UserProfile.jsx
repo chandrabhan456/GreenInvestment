@@ -51,7 +51,7 @@ const UserProfile = () => {
     isOpen && (
       <div
         ref={profileRef}
-        className={`  relative right-8 top-12 dark:bg-black bg-[#f8f9fa] p-2 rounded-lg w-48 h-20 border border-gray-800 dark:border-[#4f4f4f] ` }
+        className={`  relative right-32 top-12 dark:bg-black bg-[#f8f9fa] p-2 rounded-lg w-48 h-20 border border-gray-800 dark:border-[#4f4f4f] ` }
        
       >
         <div className="flex">

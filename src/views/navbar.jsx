@@ -41,7 +41,7 @@ const Navbar = () => {
             alt="nttlogo"
           />
           <div
-            className="mt-1.9 text-3xl"
+            className="mt-1.9 text-3xl text-white"
             onClick={handleClick1}
             style={{ cursor: "pointer" }}
           >
@@ -66,11 +66,11 @@ const Navbar = () => {
               alt="user-profile"
             />
                <p className='whitespace-nowrap ml-1 text-xl flex mt-1'>
-              <span className="text-black-400  text-black dark:text-white "  >Hi,</span>{' '}
-              <span className="flex text-black-400 font-bold ml-1  text-black dark:text-white"  >
+              <span className="text-black-400  text-white "  >Hi,</span>{' '}
+              <span className="flex text-black-400 font-bold ml-1  text-white dark:text-white"  >
                 Michael
-              {!(isClicked.userProfile) &&  <MdKeyboardArrowDown className="dark:text-white text-black text-14 mt-2" />}
-              {(isClicked.userProfile) &&  <MdKeyboardArrowUp className="dark:text-white text-black text-14 mt-2" onClick={() => handleClick('userProfile')}/>}
+              {!(isClicked.userProfile) &&  <MdKeyboardArrowDown className="text-white text-14 mt-2" />}
+              {(isClicked.userProfile) &&  <MdKeyboardArrowUp className="text-white text-14 mt-2" onClick={() => handleClick('userProfile')}/>}
              
               </span>
             </p>

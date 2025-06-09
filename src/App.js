@@ -3,21 +3,22 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navbar,  Sidebar,Chatbot} from './views';
 import { useStateContext } from './contexts/ContextProvider';
-import {MainPage, } from './components'
+import MainPage from './components/Main_Page/MainPage'
 import nttlogo from './data/nttdatalogo.svg';
 import { SiChatbot } from "react-icons/si";
 import Login from "./views/Login";
+import DataPage  from './components/Data_Page/Data_Page';
 const App = () => {
   localStorage.setItem('OpenAI_Configuration',true)
   localStorage.removeItem("login");
-  const {mainPage,documentation,setDocumentation,login1,setlogin1,setChatbot,chatbot} = useStateContext();
-
+  const {secondPage,mainPage,documentation,setDocumentation,login1,setlogin1,setChatbot,chatbot} = useStateContext();
+ 
  
  
   return (
 <div >
 
-<BrowserRouter future={{ v7_startTransition: true,v7_relativeSplatPath:true }}>
+<BrowserRouter >
   {!login1 ? (
     <Login />
   ) : (
@@ -46,13 +47,17 @@ const App = () => {
            {chatbot && (<Chatbot />)}
      {/* Main Content - Takes Remaining Space */}
  <div className={`transition-all duration-300 w-full overflow-x-hidden ml-80 `}>
+  
   <Routes>
-  {mainPage && (
-      <>
-      
-        <Route path="/" element={<MainPage />} />
-      </>)}
+ 
    
+      
+        {!secondPage && <Route path="/" element={<MainPage />} />}
+        {secondPage && (<>
+         <Route path="/" element={<DataPage />} />
+           <Route path="/data_Page" element={<DataPage />} />
+           </>)}
+     
 
     {/* Documentation routes */}
     

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {  useStateContext } from "../../contexts/ContextProvider";
-const TABS = ["Stocks", "ETFs", "Mutual Funds"];
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+const TABS = ["Stocks", "Bonds", "Mutual Funds"];
 
 const portfolioPieData = [
   { name: "Renewable Energy", value: 65 },
@@ -20,51 +21,210 @@ const newsItems = [
 const ITEMS_PER_PAGE = 4;
 
 const MainPage = () => {
-   const {error,result,  isLoading} = useStateContext()
+   const navigate = useNavigate(); // Initialize useNavigate for navigation
+
+   const { setStockData1,setSecondPage,error,result,  isLoading} = useStateContext()
   const [activeTab, setActiveTab] = useState("Stocks");
   const [currentPage, setCurrentPage] = useState(1);
-  const [stockData, setStockData] = useState([]);
+  const [stockResult, setStockData] = useState([]);
+  const [bondsResult,  setBondsData] = useState([]);
+  const [ mutualFundsResult, setMutualFundsData] = useState([]);
  
+  const handleButtonClick = () => {
+    console.log("Historical Data Analysis Clicked");
+    setSecondPage(true)
+    navigate('/data_Page'); // Navigate to the /historicalData route
+  };
 
-  useEffect(() => {
-    
+ useEffect(() => {
+  const parseApiResponse = (response) => {
+    const dataLines = response.trim().split("\n").slice(2); // Skip the first two header lines
+    const items = dataLines.map((line) => {
+      const columns = line.split("|").map((col) => col.trim());
+      return {
+        name: columns[1],
+        sector: columns[2],
+        fundamental_analysis: columns[3],
+        technical_analysis: columns[4],
+        beta_value: parseFloat(columns[5]),
+        current_price: columns[6],
+        summary: columns[7],
+        dividend: columns[8],
+        pe_ratio: columns[9] === "N/A" ? null : parseInt(columns[9]),
+        all_time_high: columns[10],
+        investment_type: columns[11],
+        reason_for_recommendation: columns[12],
+        allocation_strategy: columns[13],
+      };
+    });
+    return items;
+  };
 
-    const parseApiResponse = (response) => {
-      const dataLines = response.trim().split("\n").slice(2); // Skip the first two header lines
-      const stocks = dataLines.map((line) => {
-        const columns = line.split("|").map((col) => col.trim());
-        return {
-          name: columns[1],
-          sector: columns[2],
-          fundamental_analysis: columns[3],
-          technical_analysis: columns[4],
-          beta_value: parseFloat(columns[5]),
-          current_price: columns[6],
-          summary: columns[7],
-          dividend: columns[8],
-          pe_ratio: columns[9] === "N/A" ? null : parseInt(columns[9]),
-          all_time_high: columns[10],
-          investment_type: columns[11],
-          reason_for_recommendation: columns[12],
-          allocation_strategy: columns[13],
-        };
-      });
-      return stocks;
-    };
+  const categorizeByInvestmentType = (items) => {
+    const categorizedData = items.reduce(
+      (categories, item) => {
+        const { investment_type } = item;
+     
+        switch (investment_type) {
+          case 'Stocks':
+            categories.stocks.push(item);
+            
+            break;
+          case 'Bonds':
+            categories.bonds.push(item);
+            break;
+          case 'Mutual Fund':
+            categories.mutualFunds.push(item);
+            break;
+          default:
+            // Handle unknown investment types if necessary
+            break;
+        }
+        return categories;
+      },
+      { stocks: [], bonds: [], mutualFunds: [] } // Initial categorization object
+    );
+    return categorizedData;
+  };
 
-    const parsedData = parseApiResponse(result);
-    setStockData(parsedData);
-  }, [result]);
-  const filteredData = stockData; // Update this logic based on tab later
+  const parsedData = parseApiResponse(result);
+  console.log("parsed Data",parsedData)
+  const categorizedData = categorizeByInvestmentType(parsedData);
+
+  // Set data into respective state variables
+  setStockData(categorizedData.stocks);
+   setStockData1(categorizedData.stocks);
+  setBondsData(categorizedData.bonds);
+  setMutualFundsData(categorizedData.mutualFunds);
+}, [result]);
+   const getFilteredData = () => {
+    switch (activeTab) {
+      case 'Stocks':
+        return stockResult;
+      case 'Bonds':
+        return bondsResult;
+      case 'Mutual Funds':
+        return mutualFundsResult;
+      default:
+        return [];
+    }
+  };
+
+   const filteredData = getFilteredData();
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentStocks = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  console.log("stock data", stockData);
+
+  console.log("stock data", stockResult);
+   console.log("bond data", bondsResult);
+    console.log("mutual data", mutualFundsResult);
   return (
     <div className="p-6 bg-gray-100 min-h-screen ">
       {/* Tabs */}
       <div className="flex">
        {activeTab === 'Stocks' && <div className="w-1/2">
+          <div className="flex border-b border-gray-300">
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 px-4 py-2 transition-colors duration-300 ${
+                  activeTab === tab
+                    ? "bg-green-700 text-white border-t border-l border-r border-green-700 rounded-t-md"
+                    : "bg-white text-green-700  border-r border-t border-gray-200"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className="flex mt-4">
+            <div className="">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left: Stocks List */}
+                <div className="w-[206%] grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentStocks.map((stock, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-4 shadow rounded min-h-[200px] flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            {isLoading && <div>Loading... </div>}
+                            {!isLoading && <h2 className="font-semibold text-lg">
+                              {stock.name}
+                            </h2>}
+                          {/*  <p className="text-sm text-gray-500">
+                              Renewable Energy
+                            </p>*/}
+                          </div>
+                         {/* <div className="text-green-600 font-bold">
+                            {stock.score}
+                          </div>*/}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Sector: <strong> {stock.sector}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Current market price: <strong> {stock.current_price}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          P/E ratio: <strong> {stock.pe_ratio}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Divident:<strong> {stock.dividend}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Beta: <strong> {stock.beta_value}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          All time high: <strong> {stock.all_time_high}</strong> 
+                        </div>
+                      </div>
+
+                      {/* <div className="flex justify-center">
+                        <button className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
+                          Add to Portfolio
+                        </button>
+                      </div> */}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Right: Other Section */}
+                <div className="w-1/2">
+                  {/* Additional content can go here */}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end items-center mt-6 space-x-2">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 justify-center rounded ${
+                  currentPage === i + 1
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+             onClick={handleButtonClick}
+              className=" px-3 py-1 rounded bg-orange-400 text-white"
+            >
+              Historical Data Analysis
+            </button>
+
+            {/* Right: Portfolio Card */}
+          </div>
+        </div>}
+        {activeTab === 'Bonds' && <div className="w-1/2">
           <div className="flex border-b border-gray-300">
             {TABS.map((tab) => (
               <button
@@ -166,7 +326,7 @@ const MainPage = () => {
             {/* Right: Portfolio Card */}
           </div>
         </div>}
-         {activeTab != 'Stocks' && <div className="w-1/2">
+        {activeTab === 'Mutual Funds' && <div className="w-1/2">
           <div className="flex border-b border-gray-300">
             {TABS.map((tab) => (
               <button
@@ -182,7 +342,92 @@ const MainPage = () => {
               </button>
             ))}
           </div>
-          </div>}
+          <div className="flex mt-4">
+            <div className="">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left: Stocks List */}
+                <div className="w-[206%] grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentStocks.map((stock, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-4 shadow rounded min-h-[200px] flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            {isLoading && <div>Loading... </div>}
+                            {!isLoading && <h2 className="font-semibold text-lg">
+                              {stock.name}
+                            </h2>}
+                          {/*  <p className="text-sm text-gray-500">
+                              Renewable Energy
+                            </p>*/}
+                          </div>
+                         {/* <div className="text-green-600 font-bold">
+                            {stock.score}
+                          </div>*/}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Sector: <strong> {stock.sector}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Current market price: <strong> {stock.current_price}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          P/E ratio: <strong> {stock.pe_ratio}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Divident:<strong> {stock.dividend}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Beta: <strong> {stock.beta_value}</strong> 
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          All time high: <strong> {stock.all_time_high}</strong> 
+                        </div>
+                      </div>
+
+                      {/* <div className="flex justify-center">
+                        <button className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
+                          Add to Portfolio
+                        </button>
+                      </div> */}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Right: Other Section */}
+                <div className="w-1/2">
+                  {/* Additional content can go here */}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end items-center mt-6 space-x-2">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 justify-center rounded ${
+                  currentPage === i + 1
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => console.log("Historical Data Analysis Clicked")}
+              className=" px-3 py-1 rounded bg-orange-400 text-white"
+            >
+              Historical Data Analysis
+            </button>
+
+            {/* Right: Portfolio Card */}
+          </div>
+        </div>}
         {/* Pagination */}
 
         <div className="bg-white w-[25%] p-4 shadow rounded ml-6">

@@ -30,7 +30,7 @@ export const ContextProvider = ({ children }) => {
    const [chatbot, setChatbot] = useState(false)
    const [secondPage,setSecondPage] = useState(false)
      const [stockResult1, setStockData1] = useState([]);
-   
+     const [activeStock, setActiveStock] = useState('');
   useEffect(() => {
     localStorage.setItem('login', login1);
   }, [login1]);
@@ -41,7 +41,7 @@ export const ContextProvider = ({ children }) => {
 
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <StateContext.Provider value={{stockResult1, setStockData1,secondPage,setSecondPage,chatbot, setChatbot,error,setError,sidebarCurrentStep,result,isLoading, setIsLoading, setResult, setSidebarCurrentStep,login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
+    <StateContext.Provider value={{activeStock, setActiveStock, stockResult1, setStockData1,secondPage,setSecondPage,chatbot, setChatbot,error,setError,sidebarCurrentStep,result,isLoading, setIsLoading, setResult, setSidebarCurrentStep,login1,setlogin1,mainPage,setMainPage,handleClick,setIsClicked,isClicked,initialState}}>
       {children}
     </StateContext.Provider>
   );

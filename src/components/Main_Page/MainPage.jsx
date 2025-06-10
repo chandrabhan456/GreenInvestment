@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 4;
 const MainPage = () => {
    const navigate = useNavigate(); // Initialize useNavigate for navigation
 
-   const { setStockData1,setSecondPage,error,result,  isLoading} = useStateContext()
+   const {activeStock, setActiveStock, setStockData1,setSecondPage,error,result,  isLoading} = useStateContext()
   const [activeTab, setActiveTab] = useState("Stocks");
   const [currentPage, setCurrentPage] = useState(1);
   const [stockResult, setStockData] = useState([]);
@@ -140,13 +140,14 @@ const MainPage = () => {
           </div>
           <div className="flex mt-4">
             <div className="">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
                 {/* Left: Stocks List */}
-                <div className="w-[206%] grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-[206%] grid grid-cols-2 md:grid-cols-2 gap-4">
                   {currentStocks.map((stock, index) => (
                     <div
                       key={index}
-                      className="bg-white p-4 shadow rounded min-h-[200px] flex flex-col justify-between"
+                       onClick={()=>{setSecondPage(true);setActiveStock(stock.name)}}
+                      className="bg-white p-4 shadow rounded min-h-[200px] cursor-pointer flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex justify-between items-center mb-2">
@@ -193,9 +194,7 @@ const MainPage = () => {
                 </div>
 
                 {/* Right: Other Section */}
-                <div className="w-1/2">
-                  {/* Additional content can go here */}
-                </div>
+               
               </div>
             </div>
           </div>
@@ -214,12 +213,7 @@ const MainPage = () => {
                 {i + 1}
               </button>
             ))}
-            <button
-             onClick={handleButtonClick}
-              className=" px-3 py-1 rounded bg-orange-400 text-white"
-            >
-              Historical Data Analysis
-            </button>
+        
 
             {/* Right: Portfolio Card */}
           </div>
@@ -248,6 +242,7 @@ const MainPage = () => {
                   {currentStocks.map((stock, index) => (
                     <div
                       key={index}
+                     
                       className="bg-white p-4 shadow rounded min-h-[200px] flex flex-col justify-between"
                     >
                       <div>
@@ -294,10 +289,6 @@ const MainPage = () => {
                   ))}
                 </div>
 
-                {/* Right: Other Section */}
-                <div className="w-1/2">
-                  {/* Additional content can go here */}
-                </div>
               </div>
             </div>
           </div>
@@ -316,12 +307,7 @@ const MainPage = () => {
                 {i + 1}
               </button>
             ))}
-            <button
-              onClick={() => console.log("Historical Data Analysis Clicked")}
-              className=" px-3 py-1 rounded bg-orange-400 text-white"
-            >
-              Historical Data Analysis
-            </button>
+           
 
             {/* Right: Portfolio Card */}
           </div>
@@ -396,10 +382,7 @@ const MainPage = () => {
                   ))}
                 </div>
 
-                {/* Right: Other Section */}
-                <div className="w-1/2">
-                  {/* Additional content can go here */}
-                </div>
+              
               </div>
             </div>
           </div>
@@ -418,12 +401,7 @@ const MainPage = () => {
                 {i + 1}
               </button>
             ))}
-            <button
-              onClick={() => console.log("Historical Data Analysis Clicked")}
-              className=" px-3 py-1 rounded bg-orange-400 text-white"
-            >
-              Historical Data Analysis
-            </button>
+          
 
             {/* Right: Portfolio Card */}
           </div>

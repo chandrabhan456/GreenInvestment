@@ -8,10 +8,10 @@ import { RiUpload2Fill } from "react-icons/ri";
 import { IoIosClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 const riskToleranceOptions = [
-  { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
-  { value: "high", label: "High" },
-  { value: "veryhigh", label: "VeryHigh" },
+  { value: "Low", label: "Low" },
+  { value: "Medium", label: "Medium" },
+  { value: "High", label: "High" },
+  { value: "Veryhigh", label: "VeryHigh" },
   // Add more options as needed
 ];
 const investmentTypes = ["Stocks", "Bonds", "Mutual Funds"];

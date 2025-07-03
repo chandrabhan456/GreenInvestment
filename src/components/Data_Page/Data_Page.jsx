@@ -1,63 +1,107 @@
 import React, { useState, useEffect } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { useStateContext } from "../../contexts/ContextProvider";
-import HistoricalGraph from "./HistoricalGraph";
-import ForecastGraph from "./ForecastGraph";
-import ExpectedReturn from "./ExpectedReturn";
-import BarGraph from "./BarGraph";
+import HistoricalGraph from "./Graphs/HistoricalGraph";
+import ForecastGraph from "./Graphs/ForecastGraph";
+import ExpectedReturn from "./Graphs/ExpectedReturn";
+import BarGraph from "./Graphs/BarGraph";
+import ScanarioGraph from "./Graphs/ScanarioGraph";
+const DROPDOWN_OPTIONS = [
+  { label: "history_data_5_years", value: "5 year" },
+  { label: "history_data_3_years", value: "3 year" },
+  { label: "history_data_1_year", value: "1 year" },
+  { label: "history_data_6_month", value: "6 month" },
+  { label: "history_data_2_month", value: "2 month" },
+];
+const DROPDOWN_OPTIONS_Forecast = [
+  { label: "forecast_5_years", value: "5 year" },
+  { label: "forecast_3_years", value: "3 year" },
+]
 
+const DROPDOWN_OPTIONS_Consolidated = [
+  { label: "consolidated_data_5_years", value: "5 year" },
+  { label: "consolidated_data_3_years", value: "3 year" },
+]
 const Data_Page = () => {
-  const { activeStock, stockResult1, setSecondPage, error, result, isLoading } =
-    useStateContext();
+  const {
+    activeStock,
+    stockResult1,
+    setSecondPage,
+    error,
+    stockName,
+    result,
+    isLoading,
+    budget1,
+  } = useStateContext();
   const [activeTab, setActiveTab] = useState(activeStock);
 
   const [expandedSection, setExpandedSection] = useState(null);
   const activeStock1 = stockResult1.find((stock) => stock.name === activeTab);
   const [response, setResponse] = useState(false);
   const [barChartData, setBarChartData] = useState(null);
-   const [historicalChartData, setHistoricalChartData] = useState(null);
-    const [forecastChartData, setForecastChartData] = useState(null);
-     const [returnChartData, setreturnChartData] = useState(null);
+  const [historicalChartData, setHistoricalChartData] = useState(null);
+  const [forecastChartData, setForecastChartData] = useState(null);
+  const [returnChartData, setReturnChartData] = useState(null);
+  const [scenario, setScenario] = useState("return");
+  const [returnNewData, setReturnNewData] = useState(null);
+  const [selectedHistorical, setSelectedHistorical] = useState("history_data_5_years");
+  const [selectedForecast, setSelectedForecast] = useState("forecast_5_years");
+  const [selectedBar, setSelectedBar] = useState("consolidated_data_5_years");
   useEffect(() => {
     // Define the function to fetch stock data
+
     const fetchStockData = async () => {
+      
+      const stockListString = stockName.join(",");
+      const encodedStockList = encodeURIComponent(stockListString);
+      setResponse(false);
       try {
         const response = await fetch(
-          `https://api.example.com/stocks/${activeStock}`
+          `http://127.0.0.1:8000/graphinput/${activeTab}`,
+          {
+            method: "POST",
+
+            headers: {
+              Accept: "application/json",
+
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+
+            body: `recommended_list=${encodedStockList}`,
+          }
         );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
+
+        setBarChartData(data.consolidated_data);
+        setHistoricalChartData(data.historical_data);
+        setForecastChartData(data.forecast_data);
+        setReturnChartData(data.expected_returns);
+
+        setResponse(true);
       } catch (error) {
         console.error("Error fetching stock data:", error);
-        const data = [
-          {
-            year: "2022",
-            capitalAppreciation: 5.5911660536668535,
-            dividendGrowth: 5.502,
-          },
-          {
-            year: "2023",
-            capitalAppreciation: -37.80208399379693,
-            dividendGrowth: 5.906,
-          },
-          {
-            year: "2024",
-            capitalAppreciation: 21.143389601389696,
-            dividendGrowth: 6.322,
-          },
-        ];
-        setBarChartData(data);
+
+        // Fallback data if the request fails
+
         setResponse(true);
       }
     };
 
     // Call the function to fetch stock data
+
     fetchStockData();
 
     // Cleanup function (optional, for cleaning up resources)
+
     return () => {
       // Any cleanup logic can go here
     };
-  }, [activeTab]); // Dependency array with activeStock
+  }, [activeTab]); // Dependency array with activeTab
 
   const sections = [
     {
@@ -74,6 +118,46 @@ const Data_Page = () => {
     },
     { title: "Summary", content: activeStock1 ? activeStock1.summary : "" },
   ];
+  async function handleChange(newScenario) {
+    setScenario(newScenario);
+
+    if (newScenario === "return") {
+      setReturnChartData(returnChartData);
+    } else {
+      // Replace these with your actual values or state variables
+      const ticker = activeStock1.name;
+      const investment_budget = budget1;
+      const allocation_strategy = activeStock1.allocation_strategy.replace(
+        "%",
+        ""
+      ); // "15"
+      const current_market_price = activeStock1.current_price;
+
+      const url =
+        `http://127.0.0.1:8000/calculate-forecast` +
+        `?ticker=${encodeURIComponent(ticker)}` +
+        `&investment_budget=${encodeURIComponent(investment_budget)}` +
+        `&allocation_strategy=${encodeURIComponent(allocation_strategy)}` +
+        `&current_market_price=${encodeURIComponent(current_market_price)}`;
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+          },
+          body: "", // empty body, as in your curl
+        });
+        const data = await response.json();
+        setReturnNewData(data);
+      } catch (error) {
+        console.log("selected stock", activeStock1.name);
+        setReturnNewData(null);
+      }
+    }
+  }
+
+  useEffect(() => {}, [returnChartData]);
   const toggleSection = (index) => {
     setExpandedSection(expandedSection === index ? null : index);
   };
@@ -108,32 +192,172 @@ const Data_Page = () => {
           <div className="grid grid-cols-2 gap-4 mt-4">
             {/* Row 1 */}
             <div className="bg-white p-4 shadow-md ">
-              <h3 className="text-center mb-2 font-bold">
-                Historical Stock Price (3 Yrs)
-              </h3>
-              {response && <HistoricalGraph />}
+             <div className="flex items-center justify-between mb-2">
+                <h3 className="flex-1 text-center ml-16 font-bold">
+                  Historical Stock Price
+                </h3>
+                <select
+                  className="ml-2 border rounded px-2 py-1"
+                  value={selectedHistorical}
+                  onChange={(e) => setSelectedHistorical(e.target.value)}
+                >
+                  {DROPDOWN_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.label}>
+                      {opt.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {response && <HistoricalGraph data={historicalChartData} />}
               {!response && <div>Loading ...</div>}
             </div>
             <div className="bg-white p-4 shadow-md">
-              <h3 className="text-center mb-2 font-bold">
-                Forecast Stock Price (3 Yrs)
-              </h3>
-              {response && <ForecastGraph />}
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="flex-1 text-center ml-16 font-bold">
+                  Forecast Stock Price
+                </h3>
+                <select
+                  className="ml-2 border rounded px-2 py-1"
+                  value={selectedForecast}
+                  onChange={(e) => setSelectedForecast(e.target.value)}
+                >
+                  {DROPDOWN_OPTIONS_Forecast.map((opt) => (
+                    <option key={opt.value} value={opt.label}>
+                      {opt.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {response && <ForecastGraph data={forecastChartData} />}
               {!response && <div>Loading ...</div>}
             </div>
             {/* Row 2 */}
             <div className="bg-white p-4 shadow-md">
-              <h3 className="text-center mb-2 font-bold">
-                Expected Return (Individual)
-              </h3>
-              {response && <ExpectedReturn />}
-              {!response && <div>Loading ...</div>}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  marginBottom: "1rem",
+                }}
+              >
+                <h3
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Expected Return (Individual)
+                </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                  }}
+                >
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="scenario"
+                      value="return"
+                      checked={scenario === "return"}
+                      onChange={() => handleChange("return")}
+                    />{" "}
+                    Return
+                  </label>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="scenario"
+                      value="scenario1"
+                      checked={scenario === "scenario1"}
+                      onChange={() => handleChange("scenario1")}
+                    />{" "}
+                    Scenario1
+                  </label>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="scenario"
+                      value="scenario2"
+                      checked={scenario === "scenario2"}
+                      onChange={() => handleChange("scenario2")}
+                    />{" "}
+                    Scenario2
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                {/* ...your other UI... */}
+                {scenario === "return" ? (
+                  response ? (
+                    <ExpectedReturn key="return" data={returnChartData} />
+                  ) : (
+                    <div>Loading ...</div>
+                  )
+                ) : scenario === "scenario1" ? (
+                  returnNewData ? (
+                    <ScanarioGraph
+                      key="scenario1"
+                      data={returnNewData.scenario_1}
+                    />
+                  ) : (
+                    <div>Loading ...</div>
+                  )
+                ) : scenario === "scenario2" ? (
+                  returnNewData ? (
+                    <ScanarioGraph
+                      key="scanario2"
+                      data={returnNewData.scenario_2}
+                    />
+                  ) : (
+                    <div>Loading ...</div>
+                  )
+                ) : (
+                  <div>No scenario matched</div>
+                )}
+              </div>
             </div>
             <div className="bg-white p-4 shadow-md">
-              <h3 className="text-center mb-2 font-bold">
-                Consolidated Return
-              </h3>
-              {response && <BarGraph data={barChartData}/>}
+                <div className="flex items-center justify-between mb-2">
+                <h3 className="flex-1 text-center ml-16 font-bold">
+                  Consolidated Returns
+                </h3>
+                <select
+                  className="ml-2 border rounded px-2 py-1"
+                  value={selectedBar}
+                  onChange={(e) => setSelectedBar(e.target.value)}
+                >
+                  {DROPDOWN_OPTIONS_Consolidated.map((opt) => (
+                    <option key={opt.value} value={opt.label}>
+                      {opt.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {response && <BarGraph  data={barChartData[selectedBar]} />}
               {!response && <div>Loading ...</div>}
             </div>
           </div>

@@ -9,14 +9,8 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-// Transform the data into an array of objects
-const data = [
-  { year: "2026", expectedReturn: 56.44399405077301 },
-  { year: "2027", expectedReturn: 44.12985799013162 },
-  { year: "2028", expectedReturn: 32.62703799050916 }
-];
 
-const ExpectedReturn = () => {
+const ExpectedReturn = ({data}) => {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <LineChart
@@ -27,7 +21,7 @@ const ExpectedReturn = () => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="expectedReturn" stroke="#8884d8" activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey="Forecated_stock_price" stroke="#8884d8" activeDot={{ r: 8 }} />
       </LineChart>
     </ResponsiveContainer>
   );
